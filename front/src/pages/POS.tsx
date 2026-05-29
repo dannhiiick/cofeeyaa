@@ -262,70 +262,73 @@ export function POSPage() {
             )}
           </div>
 
-          {/* Price breakdowns */}
-          {Object.keys(cart).length > 0 && (
-            <div className="price-breakdown-box">
-              <div className="breakdown-row">
-                <span>Подытог чека:</span>
-                <span>{subtotal} ₸</span>
-              </div>
-              {selectedClient && discountPercent > 0 && (
-                <div className="breakdown-row text-danger">
-                  <span>Скидка карты ({discountPercent}%):</span>
-                  <span>-{cardDiscount.toFixed(2)} ₸</span>
+          {/* Sticky footer: price + button + alerts */}
+          <div className="checkout-footer">
+            {/* Price breakdowns */}
+            {Object.keys(cart).length > 0 && (
+              <div className="price-breakdown-box">
+                <div className="breakdown-row">
+                  <span>Подытог чека:</span>
+                  <span>{subtotal} ₸</span>
                 </div>
-              )}
-              {appliedBonuses > 0 && (
-                <div className="breakdown-row text-danger">
-                  <span>Списано бонусов:</span>
-                  <span>-{appliedBonuses.toFixed(2)} ₸</span>
+                {selectedClient && discountPercent > 0 && (
+                  <div className="breakdown-row text-danger">
+                    <span>Скидка карты ({discountPercent}%):</span>
+                    <span>-{cardDiscount.toFixed(2)} ₸</span>
+                  </div>
+                )}
+                {appliedBonuses > 0 && (
+                  <div className="breakdown-row text-danger">
+                    <span>Списано бонусов:</span>
+                    <span>-{appliedBonuses.toFixed(2)} ₸</span>
+                  </div>
+                )}
+                <div className="breakdown-divider"></div>
+                <div className="breakdown-row total-price-row">
+                  <span>Итого к оплате:</span>
+                  <span className="final-price-tag">{finalPrice.toFixed(2)} ₸</span>
                 </div>
-              )}
-              <div className="breakdown-divider"></div>
-              <div className="breakdown-row total-price-row">
-                <span>Итого к оплате:</span>
-                <span className="final-price-tag">{finalPrice.toFixed(2)} ₸</span>
+                {selectedClient && (
+                  <div className="breakdown-row cashback-row text-success">
+                    <span>Кэшбек гостю (5%):</span>
+                    <span>+{cashbackEarned} б.</span>
+                  </div>
+                )}
               </div>
-              {selectedClient && (
-                <div className="breakdown-row cashback-row text-success">
-                  <span>Кэшбек гостю (5%):</span>
-                  <span>+{cashbackEarned} б.</span>
+            )}
+
+            {/* Place Order CTA */}
+            {Object.keys(cart).length > 0 && (
+              <button 
+                className="glass-btn glass-btn-primary w-100 checkout-submit-btn" 
+                onClick={handleCheckout}
+                disabled={submitting}
+              >
+                {submitting ? 'Проверка остатков сырья...' : 'Оформить и оплатить чек'}
+              </button>
+            )}
+
+            {/* Message outcomes */}
+            {successMsg && (
+              <div className="checkout-alert success animate-fade-in">
+                <CheckCircle2 size={24} className="text-success" />
+                <div>
+                  <strong>Чек #{successMsg.id} закрыт!</strong>
+                  <p>Оплачено: {successMsg.paid} ₸. Начислено кэшбека: +{successMsg.earned} бонусов.</p>
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* Place Order CTA */}
-          {Object.keys(cart).length > 0 && (
-            <button 
-              className="glass-btn glass-btn-primary w-100 checkout-submit-btn" 
-              onClick={handleCheckout}
-              disabled={submitting}
-            >
-              {submitting ? 'Проверка остатков сырья...' : 'Оформить и оплатить чек'}
-            </button>
-          )}
-
-          {/* Message outcomes */}
-          {successMsg && (
-            <div className="checkout-alert success animate-fade-in">
-              <CheckCircle2 size={24} className="text-success" />
-              <div>
-                <strong>Чек #{successMsg.id} закрыт!</strong>
-                <p>Оплачено: {successMsg.paid} ₸. Начислено кэшбека: +{successMsg.earned} бонусов.</p>
               </div>
-            </div>
-          )}
+            )}
 
-          {errorMsg && (
-            <div className="checkout-alert error animate-fade-in">
-              <AlertTriangle size={24} />
-              <div>
-                <strong>Ошибка списания со склада:</strong>
-                <p>{errorMsg}</p>
+            {errorMsg && (
+              <div className="checkout-alert error animate-fade-in">
+                <AlertTriangle size={24} />
+                <div>
+                  <strong>Ошибка списания со склада:</strong>
+                  <p>{errorMsg}</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
         </div>
       </div>

@@ -14,3 +14,6 @@ front/dist/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local runtime logs
+*.log

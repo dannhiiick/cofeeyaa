@@ -1,0 +1,254 @@
+.warehouse-container {
+  padding: 8px 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.warehouse-split {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .warehouse-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inventory-levels-panel,
+.adjustments-panel {
+  padding: 24px;
+  border-radius: 16px;
+  min-height: 400px;
+}
+
+.inventory-levels-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flex-row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stock-alarm-pill {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Stock bars scroll list */
+.ingredients-bars-scroll {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  max-height: 380px;
+  padding-right: 4px;
+}
+
+.ingredient-bar-card {
+  background: rgba(28, 20, 17, 0.4);
+  border: 1px solid rgba(201, 138, 92, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.ingredient-bar-card:hover {
+  background: rgba(38, 28, 24, 0.5);
+  border-color: rgba(201, 138, 92, 0.2);
+}
+
+.ingredient-bar-card.critical-alarm {
+  background: rgba(239, 68, 68, 0.04);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.bar-meta-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bar-left-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ing-name-lbl {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.critical-tag {
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--danger);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.ing-qty-val {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.ing-qty-val small {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.capacity-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(12, 8, 6, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.capacity-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+}
+
+.capacity-bar-fill.bg-primary {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  box-shadow: 0 0 6px rgba(201, 138, 92, 0.2);
+}
+
+.capacity-bar-fill.bg-danger {
+  background: var(--danger);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
+}
+
+/* Adjustments form */
+.adjustment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.radio-selection-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.radio-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(28, 20, 17, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.radio-pill-btn input {
+  display: none;
+}
+
+.radio-pill-btn.active {
+  border-color: var(--primary);
+  background: rgba(201, 138, 92, 0.15);
+  color: var(--primary);
+}
+
+/* Audit Log Table on bottom */
+.warehouse-audit-panel {
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.audit-table-scroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.audit-table th,
+.audit-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(201, 138, 92, 0.1);
+}
+
+.audit-table th {
+  background: rgba(20, 14, 12, 0.85);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.audit-table tbody tr {
+  background: rgba(28, 20, 17, 0.25);
+  transition: background 0.15s ease;
+}
+
+.audit-table tbody tr:hover {
+  background: rgba(38, 28, 24, 0.45);
+}
+
+.audit-table tr.inflow {
+  border-left: 3px solid var(--accent);
+}
+
+.audit-table tr.write_off {
+  border-left: 3px solid var(--danger);
+}
+
+.op-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.op-badge.inflow { background: rgba(16, 185, 129, 0.12); color: var(--accent); }
+.op-badge.write_off { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+
+.mt-24 { margin-top: 24px; }
+.mt-15 { margin-top: 15px; }
+.mt-10 { margin-top: 10px; }
+.text-center { text-align: center; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}

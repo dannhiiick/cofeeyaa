@@ -1,4 +1,4 @@
-import type { CurrentUser, Client, CommunicationHistory, NotificationLog, InventoryItem, StockOperation, CoffeeProduct, Order } from '../types';
+import type { CurrentUser, Client, CommunicationHistory, NotificationLog, InventoryItem, StockOperation, CoffeeProduct, Order, AnalyticsResponse } from '../types';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -273,18 +273,5 @@ export async function fetchAnalytics(period = '30', startDate?: string, endDate?
   if (startDate) params.push(`start_date=${startDate}`);
   if (endDate) params.push(`end_date=${endDate}`);
   const query = `?${params.join('&')}`;
-  return apiRequest<{
-    period: { start: string; end: string };
-    metrics: {
-      revenue: string;
-      cogs: string;
-      net_profit: string;
-      profitability: number;
-      total_orders: number;
-      critical_stock_count: number;
-    };
-    top_products: { name: string; quantity: number; revenue: string }[];
-    sales_trend: { date: string; revenue: string }[];
-    critical_items: InventoryItem[];
-  }>(`analytics${query}`, { method: 'GET' });
+  return apiRequest<AnalyticsResponse>(`analytics${query}`, { method: 'GET' });
 }

@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useCallback, useEffect, useState } from 'react';
 import { fetchAnalytics } from '../api/client';
+import type { AnalyticsResponse } from '../types';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -18,32 +20,41 @@ export function AnalyticsPage() {
   const [endDate, setEndDate] = useState('');
   
   // Analytics response state
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<AnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadAnalytics();
-  }, [period]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async (
+    nextPeriod: string,
+    nextStartDate?: string,
+    nextEndDate?: string
+  ) => {
     setLoading(true);
+    setError(null);
     try {
-      const s = period === 'custom' 
-        ? await fetchAnalytics('custom', startDate, endDate)
-        : await fetchAnalytics(period);
+      const s = nextPeriod === 'custom'
+        ? await fetchAnalytics('custom', nextStartDate, nextEndDate)
+        : await fetchAnalytics(nextPeriod);
       setStats(s);
     } catch (err) {
       console.error(err);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (period !== 'custom') {
+      loadAnalytics(period);
+    }
+  }, [loadAnalytics, period]);
 
   const handleCustomSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!startDate || !endDate) return;
     setPeriod('custom');
-    loadAnalytics();
+    loadAnalytics('custom', startDate, endDate);
   };
 
   if (loading && !stats) {
@@ -57,9 +68,18 @@ export function AnalyticsPage() {
     );
   }
 
+  if (error && !stats) {
+    return (
+      <div className="analytics-container animate-fade-in">
+        <div className="settings-error-alert">{error}</div>
+      </div>
+    );
+  }
+
   // Find max value in trend for scaling CSS chart bars
-  const maxTrendVal = stats?.sales_trend?.length > 0 
-    ? Math.max(...stats.sales_trend.map((s: any) => Number(s.revenue)), 100) 
+  const salesTrend = stats?.sales_trend ?? [];
+  const maxTrendVal = salesTrend.length > 0
+    ? Math.max(...salesTrend.map((s) => Number(s.revenue)), 100)
     : 100;
 
   return (
@@ -114,6 +134,8 @@ export function AnalyticsPage() {
 
       {stats && (
         <>
+          {error && <div className="settings-error-alert">{error}</div>}
+
           {/* Profitability KPI summary blocks */}
           <div className="dashboard-grid-4">
             <div className="stat-card glass-panel">
@@ -121,7 +143,7 @@ export function AnalyticsPage() {
                 <DollarSign size={24} className="stat-icon primary" />
                 <span className="stat-title">Общая выручка</span>
               </div>
-              <div className="stat-value">{stats.metrics.revenue} руб.</div>
+              <div className="stat-value">₸{Number(stats.metrics.revenue).toLocaleString('ru-KZ')}</div>
               <p className="stat-desc">За интервал: {stats.period.start} - {stats.period.end}</p>
             </div>
 
@@ -130,7 +152,7 @@ export function AnalyticsPage() {
                 <BookOpen size={24} className="stat-icon danger" />
                 <span className="stat-title">Себестоимость сырья</span>
               </div>
-              <div className="stat-value text-danger">{Number(stats.metrics.cogs).toFixed(2)} руб.</div>
+              <div className="stat-value text-danger">₸{Number(stats.metrics.cogs).toLocaleString('ru-KZ', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
               <p className="stat-desc">Затрачено кофейных зерен, молока и др.</p>
             </div>
 
@@ -139,7 +161,7 @@ export function AnalyticsPage() {
                 <TrendingUp size={24} className="stat-icon accent" />
                 <span className="stat-title">Операционная прибыль</span>
               </div>
-              <div className="stat-value text-success">{Number(stats.metrics.net_profit).toFixed(2)} руб.</div>
+              <div className="stat-value text-success">₸{Number(stats.metrics.net_profit).toLocaleString('ru-KZ', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
               <p className="stat-desc">Выручка за вычетом сырьевого списания</p>
             </div>
 
@@ -166,11 +188,11 @@ export function AnalyticsPage() {
                   <p className="placeholder-text">Данные тренда недоступны за выбранный день.</p>
                 ) : (
                   <div className="chart-bar-layout">
-                    {stats.sales_trend.map((s: any) => {
+                    {stats.sales_trend.map((s) => {
                       const hPercent = (Number(s.revenue) / maxTrendVal) * 85; // Max 85% height
                       return (
                         <div key={s.date} className="chart-bar-wrapper">
-                          <div className="bar-hover-val">{Number(s.revenue)} р.</div>
+                          <div className="bar-hover-val">₸{Number(s.revenue).toLocaleString('ru-KZ')}</div>
                           <div className="chart-bar-track">
                             <div 
                               className="chart-bar-fill" 
@@ -208,11 +230,11 @@ export function AnalyticsPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {stats.top_products.map((p: any) => (
+                        {stats.top_products.map((p) => (
                           <tr key={p.name}>
                             <td><strong>{p.name}</strong></td>
                             <td>{p.quantity} шт.</td>
-                            <td><span className="text-primary">{p.revenue} р.</span></td>
+                            <td><span className="text-primary">₸{Number(p.revenue).toLocaleString('ru-KZ')}</span></td>
                           </tr>
                         ))}
                       </tbody>
@@ -230,7 +252,7 @@ export function AnalyticsPage() {
                   </div>
                   <p className="mt-5">Ингредиенты ниже критического лимита:</p>
                   <div className="critical-list mt-10">
-                    {stats.critical_items.map((item: any) => (
+                    {stats.critical_items.map((item) => (
                       <div key={item.id} className="critical-list-row">
                         <span>{item.name}</span>
                         <strong className="text-danger">{item.quantity} {item.unit}</strong>

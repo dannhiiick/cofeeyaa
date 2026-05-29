@@ -107,3 +107,18 @@ export interface Order {
   updated_at: string;
   items: OrderItem[];
 }
+
+export interface AnalyticsResponse {
+  period: { start: string; end: string };
+  metrics: {
+    revenue: string;
+    cogs: string;
+    net_profit: string;
+    profitability: number;
+    total_orders: number;
+    critical_stock_count: number;
+  };
+  top_products: { name: string; quantity: number; revenue: string }[];
+  sales_trend: { date: string; revenue: string }[];
+  critical_items: InventoryItem[];
+}

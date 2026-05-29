@@ -1,7 +1,8 @@
 .pos-container {
   padding: 8px 0;
   height: 100%;
-  overflow: hidden;
+  min-height: 0;
+  overflow: auto;
 }
 
 .pos-split {
@@ -9,6 +10,7 @@
   grid-template-columns: 3fr 2fr;
   gap: 24px;
   height: calc(100vh - 120px);
+  min-height: 0;
 }
 
 @media (max-width: 1024px) {
@@ -33,9 +35,10 @@
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   height: 100%;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .panel-title-bar h3 {
@@ -255,8 +258,22 @@
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-  max-height: 280px;
-  min-height: 120px;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+/* Sticky bottom area: price summary + button */
+.checkout-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  max-height: min(46vh, 430px);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid rgba(201, 138, 92, 0.15);
+  padding-top: 12px;
   padding-right: 4px;
 }
 
@@ -435,3 +452,16 @@
 }
 
 .mt-10 { margin-top: 10px; }
+
+@media (max-width: 1024px) {
+  .checkout-desk-panel {
+    height: auto;
+    min-height: 520px;
+    overflow: visible;
+  }
+
+  .checkout-footer {
+    max-height: none;
+    overflow: visible;
+  }
+}

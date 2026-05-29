@@ -8,8 +8,8 @@
                  
   --surface: rgba(28, 20, 17, 0.65); /* Warm translucent glass */
   --surface-2: rgba(43, 31, 26, 0.8);
-  --border: rgba(201, 138, 92, 0.18); /* Fine copper glow */
-  --border-active: rgba(201, 138, 92, 0.4);
+  --border: transparent;
+  --border-active: transparent;
   
   --text-primary: #f5f2f0; /* Crisp white-cream */
   --text-secondary: #a89f9a; /* Dusty cappuccino */
@@ -176,4 +176,24 @@ h1, h2, h3, h4, h5 {
 p {
   color: var(--text-secondary);
   line-height: 1.6;
+}
+
+/* Borderless frontend pass */
+#root *,
+#root *::before,
+#root *::after {
+  border-color: transparent !important;
+}
+
+.glass-panel,
+.glass-input,
+.glass-btn,
+button,
+input,
+select,
+textarea,
+table,
+th,
+td {
+  border-color: transparent !important;
 }

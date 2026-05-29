@@ -4,9 +4,12 @@ import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   fetchInventory, 
-  fetchProducts
+  fetchProducts,
+  fetchClients,
+  fetchOrders,
+  fetchAnalytics
 } from '../api/client';
-import type { InventoryItem, CoffeeProduct } from '../types';
+import type { InventoryItem, CoffeeProduct, Client, Order } from '../types';
 import { 
   Coffee, 
   Users, 
@@ -98,6 +101,9 @@ export function Home() {
   // Dashboard states
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [products, setProducts] = useState<CoffeeProduct[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [analytics, setAnalytics] = useState<Awaited<ReturnType<typeof fetchAnalytics>> | null>(null);
   const [crmSearch, setCrmSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -110,13 +116,24 @@ export function Home() {
     const loadDashboardData = async () => {
       setLoading(true);
       try {
-        const [stock, prods] = await Promise.all([
+        const analyticsRequest =
+          user.role === 'admin' || user.role === 'director'
+            ? fetchAnalytics('30').catch(() => null)
+            : Promise.resolve(null);
+
+        const [stock, prods, crmClients, completedOrders, analyticsData] = await Promise.all([
           fetchInventory(),
-          fetchProducts()
+          fetchProducts(),
+          fetchClients(),
+          fetchOrders('completed'),
+          analyticsRequest
         ]);
         
         setInventory(stock);
         setProducts(prods);
+        setClients(crmClients);
+        setOrders(completedOrders);
+        setAnalytics(analyticsData);
       } catch (err) {
         console.error('Failed to load dashboard statistics:', err);
       } finally {
@@ -126,6 +143,22 @@ export function Home() {
 
     loadDashboardData();
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const searchClients = async () => {
+      try {
+        const crmClients = await fetchClients(crmSearch);
+        setClients(crmClients);
+      } catch (err) {
+        console.error('Failed to refresh CRM search:', err);
+      }
+    };
+
+    const timer = window.setTimeout(searchClients, 250);
+    return () => window.clearTimeout(timer);
+  }, [crmSearch, user]);
 
   // Handle sequential trace simulation for flowchart
   const handleSimulateTrace = () => {
@@ -153,9 +186,16 @@ export function Home() {
     );
   }
 
-  // Sample static data in Tenge (₸) matching user request
-  const weeklyRevenue1 = "₸45,000";
-  const weeklyRevenue2 = "₸45,000";
+  const formatCurrency = (value: number | string) =>
+    `₸${Number(value || 0).toLocaleString('ru-KZ', {
+      maximumFractionDigits: 0,
+    })}`;
+
+  const completedRevenue = orders.reduce((sum, order) => sum + Number(order.final_price), 0);
+  const revenueValue = analytics ? Number(analytics.metrics.revenue) : completedRevenue;
+  const profitValue = analytics ? Number(analytics.metrics.net_profit) : completedRevenue;
+  const marginValue = analytics ? Number(analytics.metrics.profitability) : 0;
+  const topClient = [...clients].sort((a, b) => Number(b.total_spent) - Number(a.total_spent))[0] || null;
 
   return (
     <div className="dashboard-container animate-fade-in">
@@ -312,7 +352,7 @@ export function Home() {
                   <TrendingUp size={16} className="text-success animate-pulse" />
                   <span>{t('analytics.revenue')}</span>
                 </div>
-                <div className="stat-pill-value">{weeklyRevenue1}</div>
+                <div className="stat-pill-value">{formatCurrency(revenueValue)}</div>
                 <div className="stat-pill-graph-visual">
                   <div className="bar height-30"></div>
                   <div className="bar height-45"></div>
@@ -329,7 +369,7 @@ export function Home() {
                   <Activity size={16} className="text-primary" />
                   <span>{t('analytics.profit')}</span>
                 </div>
-                <div className="stat-pill-value">{weeklyRevenue2}</div>
+                <div className="stat-pill-value">{formatCurrency(profitValue)}</div>
                 <div className="stat-pill-graph-visual">
                   <div className="bar height-20"></div>
                   <div className="bar height-35"></div>
@@ -346,7 +386,7 @@ export function Home() {
                   <CheckCircle2 size={16} className="text-success" />
                   <span>{t('analytics.margin')}</span>
                 </div>
-                <div className="stat-pill-value">72.4%</div>
+                <div className="stat-pill-value">{marginValue.toFixed(1)}%</div>
                 <div className="stat-pill-graph-visual">
                   <div className="bar height-60"></div>
                   <div className="bar height-65"></div>
@@ -410,31 +450,47 @@ export function Home() {
                 </div>
               </div>
 
-              {/* Active customer profile card example */}
+              {/* Active customer profile card */}
               <div className="crm-active-guest-example-card glass-panel">
                 <div className="guest-example-header">
                   <Award size={20} className="text-secondary animate-bounce" />
-                  <h4>{t('crm.example')}</h4>
+                  <h4>{topClient ? t('crm.example') : t('crm.search')}</h4>
                 </div>
                 <div className="guest-example-body">
-                  <div className="guest-main-info">
-                    <strong className="guest-name">{t('crm.guestName')}</strong>
-                    <span className="guest-loyalty-pill gold">GOLD GUEST</span>
-                  </div>
-                  <div className="guest-meta-rows">
-                    <div className="guest-meta-row">
-                      <span>{t('crm.phone')}:</span>
-                      <strong className="text-right">+7 707 123-45-67</strong>
+                  {topClient ? (
+                    <>
+                      <div className="guest-main-info">
+                        <strong className="guest-name">{topClient.name}</strong>
+                        <span className={`guest-loyalty-pill ${topClient.loyalty_level}`}>
+                          {topClient.loyalty_level.toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="guest-meta-rows">
+                        <div className="guest-meta-row">
+                          <span>{t('crm.phone')}:</span>
+                          <strong className="text-right">{topClient.phone}</strong>
+                        </div>
+                        <div className="guest-meta-row">
+                          <span>{t('crm.bonuses')}:</span>
+                          <strong className="text-right text-success">{topClient.bonuses_balance} б.</strong>
+                        </div>
+                        <div className="guest-meta-row">
+                          <span>{t('crm.spent')}:</span>
+                          <strong className="text-right text-primary">{formatCurrency(topClient.total_spent)}</strong>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="guest-meta-rows">
+                      <div className="guest-meta-row">
+                        <span>{language === 'ru' ? 'Клиенты' : language === 'kk' ? 'Клиенттер' : 'Clients'}:</span>
+                        <strong className="text-right">0</strong>
+                      </div>
+                      <button className="glass-btn w-100" onClick={() => navigate('/crm')}>
+                        <Users size={16} /> CRM
+                      </button>
                     </div>
-                    <div className="guest-meta-row">
-                      <span>{t('crm.bonuses')}:</span>
-                      <strong className="text-right text-success">1250 ₸</strong>
-                    </div>
-                    <div className="guest-meta-row">
-                      <span>{t('crm.spent')}:</span>
-                      <strong className="text-right text-primary">18,200 ₸</strong>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 

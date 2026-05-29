@@ -40,7 +40,7 @@ function AppLayout() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <LanguageProvider>
         <AuthProvider>
           <Routes>

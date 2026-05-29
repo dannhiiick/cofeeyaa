@@ -60,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,17 +90,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-#
-# На PythonAnywhere SQLite в отдельной папке + timeout снижает disk I/O / lock ошибки.
-# Старый файл: mv db.sqlite3 data/db.sqlite3 (один раз, если нужны данные).
-_db_dir = BASE_DIR / "data"
-_db_dir.mkdir(exist_ok=True)
+# Render persistent disk is mounted at /data — use env var or fallback to local.
+# Locally uses BASE_DIR/data/db.sqlite3 (same as before).
+_db_path_env = os.environ.get("DB_PATH")
+if _db_path_env:
+    _db_file = Path(_db_path_env)
+else:
+    _db_dir = BASE_DIR / "data"
+    _db_dir.mkdir(exist_ok=True)
+    _db_file = _db_dir / "db.sqlite3"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": _db_dir / "db.sqlite3",
+        "NAME": _db_file,
         "OPTIONS": {
             "timeout": 30,
         },
@@ -144,14 +148,49 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 MUSIC_ROOT = BASE_DIR.parent
 
-# DRF / CORS (dev)
-CORS_ALLOW_ALL_ORIGINS = True
+# DRF / CORS
+# In production set CORS_ALLOWED_ORIGINS env var, e.g.:
+#   CORS_ALLOWED_ORIGINS=https://dannhiiick.github.io
+_cors_env = os.environ.get("CORS_ALLOWED_ORIGINS", "").strip()
+if _cors_env:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_env.split(",") if o.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
+else:
+    # Development: allow all
+    CORS_ALLOW_ALL_ORIGINS = True
+
+# Always allow these headers for JWT auth
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "origin",
+    "x-requested-with",
+]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (

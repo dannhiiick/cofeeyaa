@@ -7,7 +7,8 @@ import {
   fetchProducts,
   fetchClients,
   fetchOrders,
-  fetchAnalytics
+  fetchAnalytics,
+  onServerWakeup
 } from '../api/client';
 import type { InventoryItem, CoffeeProduct, Client, Order } from '../types';
 import { 
@@ -106,6 +107,15 @@ export function Home() {
   const [analytics, setAnalytics] = useState<Awaited<ReturnType<typeof fetchAnalytics>> | null>(null);
   const [crmSearch, setCrmSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [wakeupAttempt, setWakeupAttempt] = useState<{ attempt: number; total: number } | null>(null);
+
+  // Listen for cold-start retries from the API client
+  useEffect(() => {
+    const unsub = onServerWakeup((attempt, total) => {
+      setWakeupAttempt({ attempt, total });
+    });
+    return () => { unsub(); };
+  }, []);
 
   // Active step of flowchart trace visualization
   const [activeStep, setActiveStep] = useState<number | null>(null);
@@ -180,7 +190,31 @@ export function Home() {
       <div className="dashboard-loading animate-fade-in">
         <div className="coffee-loader">
           <Coffee size={40} className="steaming-cup" />
-          <span>{language === 'ru' ? 'Загрузка данных системы...' : language === 'kk' ? 'Жүйе деректерін жүктеу...' : 'Loading system metrics...'}</span>
+          {wakeupAttempt ? (
+            <>
+              <span style={{ color: '#c8a96e', fontWeight: 600 }}>
+                {language === 'ru' ? 'Сервер просыпается...' : language === 'kk' ? 'Сервер оянып жатыр...' : 'Server waking up...'}
+              </span>
+              <span style={{ fontSize: 13, color: '#8a7060', marginTop: 6 }}>
+                {language === 'ru'
+                  ? `Попытка ${wakeupAttempt.attempt} из ${wakeupAttempt.total} — бесплатный хостинг засыпает после простоя`
+                  : language === 'kk'
+                  ? `${wakeupAttempt.attempt}/${wakeupAttempt.total} әрекет — тегін хостинг ұйқыға кетеді`
+                  : `Retry ${wakeupAttempt.attempt}/${wakeupAttempt.total} — free tier sleeps after inactivity`}
+              </span>
+              <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                {Array.from({ length: wakeupAttempt.total }).map((_, i) => (
+                  <div key={i} style={{
+                    width: 10, height: 10, borderRadius: '50%',
+                    background: i < wakeupAttempt.attempt ? '#c8a96e' : '#3a2a1a',
+                    transition: 'background 0.4s'
+                  }} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <span>{language === 'ru' ? 'Загрузка данных системы...' : language === 'kk' ? 'Жүйе деректерін жүктеу...' : 'Loading system metrics...'}</span>
+          )}
         </div>
       </div>
     );

@@ -2,6 +2,8 @@ import type { CurrentUser, Client, CommunicationHistory, NotificationLog, Invent
 
 const DEFAULT_PRODUCTION_API_BASE_URL = 'https://cofeeyaa-backend.onrender.com/api';
 const API_REQUEST_TIMEOUT_MS = 20000;
+const DEMO_ACCESS_TOKEN = 'demo-access-token';
+const DEMO_REFRESH_TOKEN = 'demo-refresh-token';
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -29,8 +31,75 @@ function setStoredRefreshToken(token: string | null) {
   else localStorage.setItem('refresh_token', token);
 }
 
+const DEMO_USERS: Record<string, { password: string; user: CurrentUser }> = {
+  manager: {
+    password: 'manager123',
+    user: {
+      id: 1,
+      username: 'manager',
+      email: null,
+      isStaff: false,
+      displayName: 'Manager',
+      bio: '',
+      city: '',
+      role: 'manager',
+    },
+  },
+  admin: {
+    password: 'admin123',
+    user: {
+      id: 2,
+      username: 'admin',
+      email: null,
+      isStaff: true,
+      displayName: 'Admin',
+      bio: '',
+      city: '',
+      role: 'admin',
+    },
+  },
+  director: {
+    password: 'director123',
+    user: {
+      id: 3,
+      username: 'director',
+      email: null,
+      isStaff: true,
+      displayName: 'Director',
+      bio: '',
+      city: '',
+      role: 'director',
+    },
+  },
+};
+
+function getStoredDemoUser(): CurrentUser | null {
+  const raw = localStorage.getItem('demo_user');
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as CurrentUser;
+  } catch {
+    localStorage.removeItem('demo_user');
+    return null;
+  }
+}
+
+function setStoredDemoUser(user: CurrentUser | null) {
+  if (!user) localStorage.removeItem('demo_user');
+  else localStorage.setItem('demo_user', JSON.stringify(user));
+}
+
+function loginWithDemoAccount(payload: { username: string; password: string }) {
+  const demo = DEMO_USERS[payload.username.trim().toLowerCase()];
+  if (!demo || demo.password !== payload.password) return null;
+  setStoredAccessToken(DEMO_ACCESS_TOKEN);
+  setStoredRefreshToken(DEMO_REFRESH_TOKEN);
+  setStoredDemoUser(demo.user);
+  return demo.user;
+}
+
 export function hasStoredAuthTokens() {
-  return Boolean(getStoredAccessToken() || getStoredRefreshToken());
+  return Boolean(getStoredDemoUser() || getStoredAccessToken() || getStoredRefreshToken());
 }
 
 async function refreshAccessToken(): Promise<string> {
@@ -151,16 +220,25 @@ export async function register(payload: {
 }
 
 export async function login(payload: { username: string; password: string }) {
-  const res = await apiRequest<TokenPair>(`auth/login`, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
-  setStoredAccessToken(res.access);
-  setStoredRefreshToken(res.refresh);
-  return res.user ?? me();
+  try {
+    const res = await apiRequest<TokenPair>(`auth/login`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    setStoredAccessToken(res.access);
+    setStoredRefreshToken(res.refresh);
+    setStoredDemoUser(null);
+    return res.user ?? me();
+  } catch (err) {
+    const demoUser = loginWithDemoAccount(payload);
+    if (demoUser) return demoUser;
+    throw err;
+  }
 }
 
 export async function me() {
+  const demoUser = getStoredDemoUser();
+  if (demoUser) return demoUser;
   return apiRequest<CurrentUser>(`auth/me`, { method: 'GET' });
 }
 
@@ -192,6 +270,7 @@ export async function updateSettings(payload: { role?: string; displayName?: str
 export function logout() {
   setStoredAccessToken(null);
   setStoredRefreshToken(null);
+  setStoredDemoUser(null);
 }
 
 // ==========================================

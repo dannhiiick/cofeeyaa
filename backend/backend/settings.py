@@ -90,25 +90,37 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 # Database
-# Render persistent disk is mounted at /data — use env var or fallback to local.
-# Locally uses BASE_DIR/data/db.sqlite3 (same as before).
-_db_path_env = os.environ.get("DB_PATH")
-if _db_path_env:
-    _db_file = Path(_db_path_env)
-else:
-    _db_dir = BASE_DIR / "data"
-    _db_dir.mkdir(exist_ok=True)
-    _db_file = _db_dir / "db.sqlite3"
+# Если задана DATABASE_URL (PostgreSQL на Render) — используем её.
+# Иначе локальный SQLite.
+import dj_database_url
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": _db_file,
-        "OPTIONS": {
-            "timeout": 30,
-        },
+_database_url = os.environ.get("DATABASE_URL")
+if _database_url:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=_database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    _db_path_env = os.environ.get("DB_PATH")
+    if _db_path_env:
+        _db_file = Path(_db_path_env)
+    else:
+        _db_dir = BASE_DIR / "data"
+        _db_dir.mkdir(exist_ok=True)
+        _db_file = _db_dir / "db.sqlite3"
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": _db_file,
+            "OPTIONS": {
+                "timeout": 30,
+            },
+        }
+    }
 
 
 # Password validation

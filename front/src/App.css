@@ -4,19 +4,16 @@
    ========================================= */
 .app-container {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 260px 1fr;
   grid-template-rows: auto 1fr auto;
   height: 100dvh;
-  width: 100%;          /* NOT 100vw — avoids scrollbar-triggered overflow */
+  width: 100%;
   max-width: 100%;
   gap: 0;
   margin: 0;
-  border: none;
-  border-radius: 0;
   overflow: hidden;
   overflow-x: clip;
-  background: var(--surface);
-  /* Prevent horizontal swipe gestures (back/forward navigation) */
+  background: var(--bg);
   touch-action: pan-y;
   overscroll-behavior: none;
   overscroll-behavior-x: none;
@@ -27,7 +24,7 @@
   grid-row: 1 / 3;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
+  background: var(--bg);
   min-width: 0;
   overflow: hidden;
 }
@@ -36,25 +33,16 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: clip;
-  padding: 32px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  padding: 28px;
   touch-action: pan-y;
   overscroll-behavior-x: none;
 }
 
-.content-area::-webkit-scrollbar {
-  width: 8px;
-}
-.content-area::-webkit-scrollbar-track {
-  background: transparent;
-}
+.content-area::-webkit-scrollbar { width: 5px; }
+.content-area::-webkit-scrollbar-track { background: transparent; }
 .content-area::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
-}
-.content-area::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  border-radius: 3px;
 }
 
 .player {
@@ -68,27 +56,18 @@
   display: grid;
   place-items: center;
   color: var(--text-secondary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
-/* ──────────────────────────────────────────
-   TABLET  (769px – 1024px)
-   Sidebar shrinks to icon-only strip
-   ────────────────────────────────────────── */
+/* ── Tablet ── */
 @media (max-width: 1024px) and (min-width: 769px) {
   .app-container {
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 56px 1fr;
   }
-
-  .content-area {
-    padding: 20px;
-  }
+  .content-area { padding: 18px; }
 }
 
-/* ──────────────────────────────────────────
-   MOBILE  (≤ 768px)
-   Sidebar hidden, bottom nav bar shown
-   ────────────────────────────────────────── */
+/* ── Mobile ── */
 @media (max-width: 768px) {
   html, body {
     overflow: hidden;
@@ -114,25 +93,19 @@
   .main-content {
     grid-column: 1;
     grid-row: 1;
-    padding-bottom: 70px; /* room for bottom nav */
+    padding-bottom: 66px;
     overflow: hidden;
     overflow-x: clip;
     touch-action: pan-y;
   }
 
   .content-area {
-    padding: 16px;
+    padding: 14px;
     overflow-x: clip;
     overscroll-behavior-x: none;
     touch-action: pan-y;
   }
 
-  .header {
-    display: none;
-  }
-
-  /* Desktop sidebar hidden on mobile — bottom nav replaces it */
-  .sidebar {
-    display: none;
-  }
+  .header { display: none; }
+  .sidebar { display: none; }
 }

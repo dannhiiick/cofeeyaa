@@ -98,7 +98,7 @@ export function SandboxPage() {
   const runLoyaltyAlgorithm = () => {
     const trace: string[] = [];
     trace.push(`[SYSTEM LOG ${new Date().toLocaleTimeString()}] Инициализация ценового калькулятора...`);
-    trace.push(`Шаг 1: Чтение исходной суммы заказа: ${loyaltyPrice} руб.`);
+    trace.push(`Шаг 1: Чтение исходной суммы заказа: ${loyaltyPrice} ₸`);
     
     // Tier discount
     let tierPercent = 0;
@@ -108,10 +108,10 @@ export function SandboxPage() {
 
     const tierDiscount = (loyaltyPrice * tierPercent) / 100;
     trace.push(`Шаг 2: Расчет скидки по карте лояльности (${tierPercent}%):`);
-    trace.push(`   - Скидка уровня '${loyaltyTier}': ${tierDiscount} руб.`);
+    trace.push(`   - Скидка уровня '${loyaltyTier}': ${tierDiscount} ₸`);
     
     let discountedPrice = loyaltyPrice - tierDiscount;
-    trace.push(`   - Стоимость с учетом скидки карты: ${discountedPrice} руб.`);
+    trace.push(`   - Стоимость с учетом скидки карты: ${discountedPrice} ₸`);
 
     // Bonus points application
     let bonusUsed = 0;
@@ -121,10 +121,10 @@ export function SandboxPage() {
       
       // Max bonus payment is 50% of the discounted price
       const maxBonusPayment = discountedPrice * 0.5;
-      trace.push(`   - Максимальный лимит оплаты бонусами (50% стоимости): ${maxBonusPayment} руб.`);
+      trace.push(`   - Максимальный лимит оплаты бонусами (50% стоимости): ${maxBonusPayment} ₸`);
 
       bonusUsed = Math.min(clientBonuses, maxBonusPayment);
-      trace.push(`   - К списанию принято: ${bonusUsed} бонусов (1 бонус = 1 рубль)`);
+      trace.push(`   - К списанию принято: ${bonusUsed} бонусов (1 бонус = 1 тенге)`);
     } else {
       trace.push(`Шаг 3: Списание бонусов не выбрано.`);
     }
@@ -133,7 +133,7 @@ export function SandboxPage() {
     const earnedBonuses = Math.floor(finalPrice * 0.05);
 
     trace.push(`Шаг 4: Расчет итоговой суммы к оплате и начислений...`);
-    trace.push(`   - ИТОГО К ОПЛАТЕ: ${finalPrice} руб.`);
+    trace.push(`   - ИТОГО К ОПЛАТЕ: ${finalPrice} ₸`);
     trace.push(`   - Будет начислено бонусов (5% кэшбек): +${earnedBonuses} б.`);
     trace.push(`[ALGORITHM RESULT] Оплата сформирована успешно. Статус заказа: COMPLETED.`);
 
@@ -159,18 +159,18 @@ export function SandboxPage() {
   const runProfitAlgorithm = () => {
     const trace: string[] = [];
     trace.push(`[SYSTEM LOG ${new Date().toLocaleTimeString()}] Генерация аналитического отчета о рентабельности...`);
-    trace.push(`Шаг 1: Агрегация сумм закрытых продаж за период: ${profitSales} руб.`);
+    trace.push(`Шаг 1: Агрегация сумм закрытых продаж за период: ${profitSales} ₸`);
     
     // COGS
     const cogs = (profitSales * profitCogsPercent) / 100;
     trace.push(`Шаг 2: Расчет совокупной себестоимости потраченного сырья (COGS):`);
     trace.push(`   - Формула: Сумма(Ингредиент.cost_price * Кол_во)`);
-    trace.push(`   - Себестоимость сырья (${profitCogsPercent}% от продаж): ${cogs} руб.`);
+    trace.push(`   - Себестоимость сырья (${profitCogsPercent}% от продаж): ${cogs} ₸`);
 
     // Net profit
     const netProfit = profitSales - cogs;
     trace.push(`Шаг 3: Расчет чистой операционной маржинальной прибыли...`);
-    trace.push(`   - Чистая прибыль (Выручка - Себестоимость): ${netProfit} руб.`);
+    trace.push(`   - Чистая прибыль (Выручка - Себестоимость): ${netProfit} ₸`);
 
     // Profitability
     const rentability = (netProfit / profitSales) * 100;
@@ -193,10 +193,9 @@ export function SandboxPage() {
       <div className="sandbox-desc-banner glass-panel">
         <Server className="banner-icon" size={32} />
         <div>
-          <h3>Интерактивная песочница алгоритмов</h3>
+          <h3>Интерактивный симулятор расчета</h3>
           <p>
-            Этот модуль предназначен для проверки и демонстрации логики трех ключевых алгоритмов, 
-            заданных Техническим Заданием. Вы можете регулировать параметры и наблюдать за шагами трассировки алгоритмов в реальном времени.
+            Этот модуль предназначен для симуляции стоимости заказов, расчета скидок программы лояльности, списания бонусов и финансовой маржинальности в реальном времени.
           </p>
         </div>
       </div>
@@ -318,7 +317,7 @@ export function SandboxPage() {
               <h4>Параметры лояльности</h4>
               
               <div className="input-group-row">
-                <label className="input-label">Сумма заказа без скидки (руб.)</label>
+                <label className="input-label">Сумма заказа без скидки (₸)</label>
                 <input 
                   type="number" 
                   value={loyaltyPrice} 
@@ -380,7 +379,7 @@ export function SandboxPage() {
                 <div className="loyalty-stats-grid">
                   <div className="stat-pill">
                     <span className="pill-title">Скидка карты</span>
-                    <span className="pill-val text-danger">-{loyaltyCalc.discount} руб.</span>
+                    <span className="pill-val text-danger">-{loyaltyCalc.discount} ₸</span>
                   </div>
                   <div className="stat-pill">
                     <span className="pill-title">Списано бонусов</span>
@@ -388,7 +387,7 @@ export function SandboxPage() {
                   </div>
                   <div className="stat-pill">
                     <span className="pill-title">Итого к оплате</span>
-                    <span className="pill-val text-success">{loyaltyCalc.finalPrice} руб.</span>
+                    <span className="pill-val text-success">{loyaltyCalc.finalPrice} ₸</span>
                   </div>
                   <div className="stat-pill">
                     <span className="pill-title">Кэшбек гостю</span>
@@ -420,7 +419,7 @@ export function SandboxPage() {
               <h4>Параметры аналитического среза</h4>
               
               <div className="input-group-row">
-                <label className="input-label">Общая выручка за период (руб.)</label>
+                <label className="input-label">Общая выручка за период (₸)</label>
                 <input 
                   type="number" 
                   value={profitSales} 
@@ -457,11 +456,11 @@ export function SandboxPage() {
                 <div className="loyalty-stats-grid">
                   <div className="stat-pill">
                     <span className="pill-title">Себестоимость (COGS)</span>
-                    <span className="pill-val text-danger">{profitMetrics.cogs} руб.</span>
+                    <span className="pill-val text-danger">{profitMetrics.cogs} ₸</span>
                   </div>
                   <div className="stat-pill">
                     <span className="pill-title">Чистая прибыль</span>
-                    <span className="pill-val text-success">{profitMetrics.netProfit} руб.</span>
+                    <span className="pill-val text-success">{profitMetrics.netProfit} ₸</span>
                   </div>
                   <div className="stat-pill">
                     <span className="pill-title">Рентабельность</span>

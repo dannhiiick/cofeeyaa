@@ -1,29 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* HSL Rich Aesthetics Colors (Coffee Theme with modern neon glass) */
-  --bg: #0c0806; /* Pitch dark coffee bean */
-  --bg-gradient: radial-gradient(circle at 10% 20%, rgba(54, 34, 25, 0.15) 0%, transparent 40%),
-                 radial-gradient(circle at 90% 80%, rgba(201, 138, 92, 0.1) 0%, transparent 45%);
-                 
-  --surface: rgba(28, 20, 17, 0.65); /* Warm translucent glass */
-  --surface-2: rgba(43, 31, 26, 0.8);
-  --border: transparent;
-  --border-active: transparent;
-  
-  --text-primary: #f5f2f0; /* Crisp white-cream */
-  --text-secondary: #a89f9a; /* Dusty cappuccino */
-  
-  --primary: #c98a5c; /* Warm copper coffee cream */
-  --primary-hover: #e09f72;
-  --secondary: #d97706; /* Dark amber */
-  --accent: #10b981; /* Fresh mint green for success/active */
-  --danger: #ef4444; /* Strawberry syrup red for critical alarms */
-  --info: #3b82f6; /* Blueberry blue */
-  
-  --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+  /* Warm dark coffee palette — muted, real, editorial */
+  --bg: #0e0b09;
+  --bg-gradient: none;
+
+  --surface: #161210;      /* solid, no blur */
+  --surface-2: #1d1714;
+  --surface-3: #241e1b;
+
+  --border: rgba(255, 210, 170, 0.09);
+  --border-soft: rgba(255, 210, 170, 0.06);
+  --border-active: rgba(180, 120, 80, 0.35);
+
+  --text-primary: #ede8e3;
+  --text-secondary: #7a7068;
+  --text-muted: #4a4440;
+
+  --primary: #b87950;       /* terracotta, less saturated */
+  --primary-hover: #cc8f61;
+  --primary-dim: rgba(184, 121, 80, 0.12);
+
+  --secondary: #c87d1a;     /* amber, muted */
+  --accent: #3d9970;        /* muted green */
+  --danger: #c0392b;
+  --info: #2e6fa3;
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.6);
+
   --sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 }
 
 html, body {
@@ -33,14 +45,11 @@ html, body {
   height: 100%;
   max-width: 100%;
   background: var(--bg);
-  background-image: var(--bg-gradient);
-  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--sans);
   overflow: hidden;
-  overflow-x: clip;          /* hard-clip, no scroll, no bounce */
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
-  /* Prevent horizontal pull-to-navigate on iOS/Android */
   overscroll-behavior: none;
   overscroll-behavior-x: none;
   touch-action: pan-y;
@@ -49,23 +58,18 @@ html, body {
 * {
   box-sizing: border-box;
   scrollbar-width: thin;
-  scrollbar-color: rgba(201, 138, 92, 0.3) rgba(0, 0, 0, 0.2);
+  scrollbar-color: rgba(184, 121, 80, 0.2) transparent;
 }
 
-/* Custom Scrollbars */
-*::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-*::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-}
+/* Scrollbars */
+*::-webkit-scrollbar { width: 5px; height: 5px; }
+*::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: rgba(201, 138, 92, 0.25);
-  border-radius: 4px;
+  background: rgba(184, 121, 80, 0.18);
+  border-radius: 3px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 138, 92, 0.45);
+  background: rgba(184, 121, 80, 0.32);
 }
 
 #root {
@@ -80,104 +84,92 @@ html, body {
   overscroll-behavior-x: none;
 }
 
-/* Glassmorphism card utility */
+/* ── Base card ── */
 .glass-panel {
   background: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--glass-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease;
 }
 
 .glass-panel:hover {
-  border-color: rgba(201, 138, 92, 0.28);
-  box-shadow: 0 16px 45px 0 rgba(0, 0, 0, 0.7), 0 0 15px 0 rgba(201, 138, 92, 0.05);
+  border-color: var(--border-active);
 }
 
-/* Input Fields styling */
+/* ── Inputs ── */
 .glass-input {
-  background: rgba(20, 14, 12, 0.7);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--text-primary);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 10px 14px;
   font-size: 15px;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
   font-family: var(--sans);
   outline: none;
 }
 .glass-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(201, 138, 92, 0.15);
-  background: rgba(30, 21, 18, 0.8);
 }
 
-/* Buttons styling */
+/* ── Buttons ── */
 .glass-btn {
-  background: rgba(201, 138, 92, 0.12);
+  background: var(--surface-2);
   border: 1px solid var(--border);
-  color: var(--primary);
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 15px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  font-size: 14px;
   font-weight: 600;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
 }
 .glass-btn:hover {
-  background: var(--primary);
-  color: #0c0806;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(201, 138, 92, 0.25);
-  border-color: var(--primary);
+  background: var(--surface-3);
+  color: var(--text-primary);
+  border-color: var(--border-active);
 }
 .glass-btn:active {
-  transform: translateY(0);
+  background: var(--surface-2);
 }
 
 .glass-btn-primary {
   background: var(--primary);
-  color: #0c0806;
+  color: #0e0b09;
   border: 1px solid var(--primary);
+  font-weight: 700;
 }
 .glass-btn-primary:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
-  box-shadow: 0 8px 25px rgba(201, 138, 92, 0.4);
+  color: #0e0b09;
 }
 
 .glass-btn-danger {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: transparent;
+  border: 1px solid rgba(192, 57, 43, 0.3);
   color: var(--danger);
 }
 .glass-btn-danger:hover {
-  background: var(--danger);
-  color: white;
+  background: rgba(192, 57, 43, 0.1);
   border-color: var(--danger);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
 }
 
-/* Animations */
+/* ── Animations — minimal ── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes glow {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(201, 138, 92, 0.2)); }
-  50% { filter: drop-shadow(0 0 12px rgba(201, 138, 92, 0.4)); }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.25s ease forwards;
 }
 
-/* Typography elements */
+/* ── Typography ── */
 h1, h2, h3, h4, h5 {
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -190,48 +182,16 @@ p {
   line-height: 1.6;
 }
 
-/* Borderless frontend pass */
-#root *,
-#root *::before,
-#root *::after {
-  border-color: transparent !important;
-}
-
-.glass-panel,
-.glass-input,
-.glass-btn,
-button,
-input,
-select,
-textarea,
-table,
-th,
-td {
-  border-color: transparent !important;
-}
-
-/* ================================================
-   TOUCH & MOBILE GLOBAL IMPROVEMENTS
-   ================================================ */
-
-/* Minimum tap target size (Apple HIG: 44x44px) */
-button,
-.glass-btn,
-.nav-item,
-.header-btn,
-.bottom-nav-item {
+/* ── Touch & Mobile ── */
+button, .glass-btn, .nav-item, .header-btn, .bottom-nav-item {
   min-height: 44px;
 }
 
-/* Prevent text selection on interactive elements */
-button,
-a,
-[role="button"] {
+button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
-/* Smooth momentum scrolling on iOS */
 .content-area,
 .crm-clients-scroll,
 .checkout-items-list,
@@ -241,15 +201,12 @@ a,
   -webkit-overflow-scrolling: touch;
 }
 
-/* Prevent horizontal overflow globally */
 body {
   overflow-x: clip;
   max-width: 100%;
   touch-action: pan-y;
 }
 
-
-/* Better focus outlines for accessibility */
 :focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;

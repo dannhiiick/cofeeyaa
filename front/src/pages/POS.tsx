@@ -280,7 +280,7 @@ export function POSPage() {
                 {appliedBonuses > 0 && (
                   <div className="breakdown-row text-danger">
                     <span>Списано бонусов:</span>
-                    <span>-{appliedBonuses.toFixed(2)} ₸</span>
+                    <span>-{appliedBonuses} б.</span>
                   </div>
                 )}
                 <div className="breakdown-divider"></div>

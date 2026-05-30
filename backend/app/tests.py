@@ -76,10 +76,10 @@ class CoffeeShopAlgorithmsTestCase(TestCase):
 
     def test_insufficient_stock_exception(self):
         """
-        Verify that stock limits are validated during order placement
+        Verify that stock limits are NOT blocking order placement and can go negative
         """
         # Cappuccino requires 0.200l Milk.
-        # We have 5.000l milk in stock. Ordering 30 Cappuccinos requires 6.000l milk -> should fail stock check!
+        # We have 5.000l milk in stock. Ordering 30 Cappuccinos requires 6.000l milk -> should succeed and go to -1.000
         from rest_framework.test import APIClient
         client = APIClient()
         client.force_authenticate(user=self.manager_user)
@@ -90,10 +90,9 @@ class CoffeeShopAlgorithmsTestCase(TestCase):
             format="json",
         )
         
-        # Check that it returns 400 Bad Request due to warehouse exception
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("Ошибка склада", response.data["detail"])
+        # Check that it returns 201 Created and succeeds
+        self.assertEqual(response.status_code, 201)
         
-        # Verify that stock was NOT decremented (rollback)
+        # Verify that stock WAS decremented and went negative
         self.milk.refresh_from_db()
-        self.assertEqual(self.milk.quantity, Decimal("5.000"))
+        self.assertEqual(self.milk.quantity, Decimal("-1.000"))

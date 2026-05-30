@@ -175,8 +175,6 @@ def stock_operations_api(request):
             if op_type == StockOperation.OpType.INFLOW:
                 item.quantity += qty
             elif op_type == StockOperation.OpType.WRITE_OFF:
-                if item.quantity < qty:
-                    return Response({"detail": f"Insufficient stock of '{item.name}' for this write-off (current: {item.quantity})"}, status=status.HTTP_400_BAD_REQUEST)
                 item.quantity -= qty
             else:
                 return Response({"detail": "Invalid operation type"}, status=status.HTTP_400_BAD_REQUEST)
@@ -256,7 +254,7 @@ def orders_api(request):
 
                 final_price = total_price - discount_amount
 
-                # Bonuses application: pay up to 50% of the discounted price using bonuses (1 bonus = 1 ruble)
+                # Bonuses application: pay up to 50% of the discounted price using bonuses (1 bonus = 1 tenge)
                 bonuses_used = 0
                 if use_bonuses and client and client.bonuses_balance > 0:
                     max_bonus_payment = final_price * Decimal("0.50")
@@ -276,18 +274,6 @@ def orders_api(request):
                         ing_id = recipe_item.item.id
                         needed_qty = recipe_item.quantity_required * qty
                         ingredients_needed[ing_id] = ingredients_needed.get(ing_id, Decimal("0.000")) + needed_qty
-
-                # Validate stock levels
-                for ing_id, required_qty in ingredients_needed.items():
-                    ing_item = InventoryItem.objects.get(pk=ing_id)
-                    if ing_item.quantity < required_qty:
-                        # EXCEPTIONS / REJECTIONS FLOW
-                        return Response(
-                            {
-                                "detail": f"Ошибка склада: Недостаточно ингредиента '{ing_item.name}'. Требуется {required_qty} {ing_item.unit}, в наличии {ing_item.quantity} {ing_item.unit}."
-                            },
-                            status=status.HTTP_400_BAD_REQUEST
-                        )
 
                 # D. Sufficient stock: Reserve stock & Log Operations
                 for ing_id, required_qty in ingredients_needed.items():
@@ -349,7 +335,7 @@ def orders_api(request):
                         client=client,
                         type=NotificationLog.NotificationType.SMS,
                         title="Ваш заказ оформлен!",
-                        message=f"Заказ #{order.id} на сумму {final_price} руб. оформлен. Списано: {bonuses_used} бонусов. Начислено: {bonuses_earned} бонусов. Баланс: {client.bonuses_balance}."
+                        message=f"Заказ #{order.id} на сумму {final_price} ₸ оформлен. Списано: {bonuses_used} б. Начислено: {bonuses_earned} б. Баланс: {client.bonuses_balance} б."
                     )
 
                 return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
@@ -423,7 +409,7 @@ def order_detail_api(request, pk):
                         client=client,
                         type=NotificationLog.NotificationType.SMS,
                         title="Отмена заказа",
-                        message=f"Заказ #{order.id} отменен. Сумма {order.final_price} руб. и бонусы скорректированы."
+                        message=f"Заказ #{order.id} отменен. Сумма {order.final_price} ₸ и бонусы скорректированы."
                     )
 
             order.status = new_status

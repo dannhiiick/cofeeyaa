@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Coffee, ShoppingBag, Users, Boxes, BarChart3, Settings, LogOut, Code, UserCheck } from 'lucide-react';
+import { Coffee, ShoppingBag, Users, Boxes, BarChart3, Settings, LogOut, Calculator, UserCheck } from 'lucide-react';
 import './Sidebar.css';
 
 export function Sidebar() {
@@ -27,7 +27,7 @@ export function Sidebar() {
     { icon: Users, labelKey: 'sidebar.crm', path: '/crm', roles: ['manager', 'director'] },
     { icon: Boxes, labelKey: 'sidebar.warehouse', path: '/warehouse', roles: ['admin', 'director'] },
     { icon: BarChart3, labelKey: 'sidebar.analytics', path: '/analytics', roles: ['director', 'admin'] },
-    { icon: Code, labelKey: 'sidebar.sandbox', path: '/sandbox', roles: ['admin', 'manager', 'director'] },
+    { icon: Calculator, labelKey: 'sidebar.sandbox', path: '/sandbox', roles: ['admin', 'manager', 'director'] },
     { icon: Settings, labelKey: 'sidebar.profile', path: '/settings', roles: ['admin', 'manager', 'director'] },
   ];
 

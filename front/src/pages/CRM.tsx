@@ -169,7 +169,7 @@ export function CRMPage() {
                 </div>
                 <div className="p-stat-card">
                   <span className="p-stat-title">Баланс бонусов</span>
-                  <span className="p-stat-val text-success">{selectedClient.bonuses_balance} ₸</span>
+                  <span className="p-stat-val text-success">{selectedClient.bonuses_balance} б.</span>
                 </div>
                 <div className="p-stat-card">
                   <span className="p-stat-title">Номер телефона</span>

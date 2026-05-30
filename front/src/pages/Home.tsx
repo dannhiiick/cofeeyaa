@@ -22,8 +22,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Search,
-  Award,
-  ShieldCheck
+  Award
 } from 'lucide-react';
 import './Home.css';
 
@@ -117,8 +116,7 @@ export function Home() {
     return () => { unsub(); };
   }, []);
 
-  // Active step of flowchart trace visualization
-  const [activeStep, setActiveStep] = useState<number | null>(null);
+
 
   useEffect(() => {
     if (!user) return;
@@ -170,20 +168,7 @@ export function Home() {
     return () => window.clearTimeout(timer);
   }, [crmSearch, user]);
 
-  // Handle sequential trace simulation for flowchart
-  const handleSimulateTrace = () => {
-    setActiveStep(1);
-    const intervals = [1000, 2000, 3000, 4000];
-    intervals.forEach((time, index) => {
-      setTimeout(() => {
-        setActiveStep(index + 1);
-      }, time);
-    });
-    // Reset after some time
-    setTimeout(() => {
-      setActiveStep(null);
-    }, 6000);
-  };
+
 
   if (loading) {
     return (
@@ -531,90 +516,56 @@ export function Home() {
             </div>
           </div>
 
-          {/* Extended Algorithm Flowchart Panel */}
+          {/* Recent Orders Activity Panel */}
           <div className="dashboard-section-card glass-panel">
             <div className="dashboard-section-header">
               <div className="section-title-with-icon">
-                <ShieldCheck className="section-header-icon primary" size={20} />
-                <h3>{t('flowchart.title')}</h3>
+                <Activity className="section-header-icon primary" size={20} />
+                <h3>{t('dashboard.recentOrders')}</h3>
               </div>
-              <button className="glass-btn lang-btn active" onClick={handleSimulateTrace}>
-                {language === 'ru' ? 'ТРАССИРОВКА' : language === 'kk' ? 'ТРАССИРОВКА' : 'TRACE'}
+              <button className="text-btn" onClick={() => navigate('/pos')}>
+                POS Terminal <ArrowRight size={14} />
               </button>
             </div>
 
-            <div className="extended-algorithm-flowchart-card glass-panel">
-              <div className="flowchart-nodes-list">
-                
-                {/* Step 1 */}
-                <div className={`flowchart-node ${activeStep === 1 ? 'active-step glow-primary' : ''}`}>
-                  <div className="node-number">1</div>
-                  <div className="node-content">
-                    <span className="node-title">[{t('flowchart.step1')}]</span>
-                    <p className="node-desc">{language === 'ru' ? 'Проверка соединения с реляционной БД' : language === 'kk' ? 'Реляциялық ДҚ-мен қосылымды тексеру' : 'Relational DB connections test'}</p>
+            <div className="recent-orders-list">
+              {orders.length === 0 ? (
+                <div className="empty-orders-state">
+                  <p className="placeholder-text">{t('dashboard.noOrders')}</p>
+                </div>
+              ) : (
+                [...orders].slice(0, 5).map((order) => (
+                  <div key={order.id} className="order-feed-item glass-panel">
+                    <div className="order-feed-header">
+                      <span className="order-id-label">#{order.id}</span>
+                      <span className={`order-status-badge ${order.status}`}>
+                        {order.status === 'completed' 
+                          ? t('dashboard.completed') 
+                          : order.status === 'cancelled' 
+                          ? t('dashboard.cancelled') 
+                          : order.status}
+                      </span>
+                    </div>
+                    <div className="order-feed-body">
+                      <div className="order-items-summary">
+                        {order.items && order.items.map((item, idx) => (
+                          <span key={idx} className="order-item-pill">
+                            {item.product_name} × {item.quantity}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="order-meta-info">
+                        <span className="order-guest-name">
+                          {order.client_name ? order.client_name : t('dashboard.guest')}
+                        </span>
+                        <span className="order-price-tag">
+                          {formatCurrency(order.final_price)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                <div className="flowchart-arrow">↓</div>
-
-                {/* Step 2 */}
-                <div className={`flowchart-node ${activeStep === 2 ? 'active-step glow-info' : ''}`}>
-                  <div className="node-number">2</div>
-                  <div className="node-content">
-                    <span className="node-title">[{t('flowchart.step2')}]</span>
-                    <p className="node-desc">{language === 'ru' ? 'Валидация остатков ингредиентов по рецепту' : language === 'kk' ? 'Рецепт бойынша ингредиент қалдықтарын валидациялау' : 'Validation of ingredients by recipe'}</p>
-                  </div>
-                </div>
-
-                <div className="flowchart-arrow">↓</div>
-
-                {/* Step 3 */}
-                <div className={`flowchart-node ${activeStep === 3 ? 'active-step glow-secondary' : ''}`}>
-                  <div className="node-number">3</div>
-                  <div className="node-content">
-                    <span className="node-title">[{t('flowchart.step3')}]</span>
-                    <p className="node-desc">{language === 'ru' ? 'Расчет кэшбека +5% на баланс лояльности' : language === 'kk' ? 'Адалдық теңгеріміне +5% кэшбэк есептеу' : 'Calculation of +5% cashback on loyalty'}</p>
-                  </div>
-                </div>
-
-                <div className="flowchart-arrow">↓</div>
-
-                {/* Step 4 */}
-                <div className={`flowchart-node ${activeStep === 4 ? 'active-step glow-success' : ''}`}>
-                  <div className="node-number">4</div>
-                  <div className="node-content">
-                    <span className="node-title">[{t('flowchart.step4')}]</span>
-                    <p className="node-desc">{language === 'ru' ? 'Списание бонусов и применение скидки' : language === 'kk' ? 'Бонустарды есептен шығару және жеңілдікті қолдану' : 'Bonus write-off and final discount'}</p>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Flowchart Outcomes Footer */}
-              <div className="flowchart-logs-console mt-15">
-                <div className="console-header-bar">
-                  <span className="console-title">{t('flowchart.logTitle')}</span>
-                  {activeStep && <span className="console-status-pulse">RUNNING</span>}
-                </div>
-                <div className="console-trace-log">
-                  {activeStep === null && (
-                    <span className="text-secondary italic">{language === 'ru' ? 'Нажмите ТРАССИРОВКА для запуска...' : language === 'kk' ? 'Іске қосу үшін ТРАССИРОВКА түймесін басыңыз...' : 'Click TRACE to launch visual run...'}</span>
-                  )}
-                  {activeStep === 1 && (
-                    <span className="text-primary font-mono">19:18:59 [SYSTEM] Connection pool verification: OK. Database responded in 4.2ms.</span>
-                  )}
-                  {activeStep === 2 && (
-                    <span className="text-info font-mono">19:19:00 [STOCK] Recipe match: Cappuccino req = 9g beans, 150ml milk. Sufficient stock.</span>
-                  )}
-                  {activeStep === 3 && (
-                    <span className="text-warning font-mono">19:19:01 [CRM] Customer Ivan I. identified (GOLD). Base discount set: 15%.</span>
-                  )}
-                  {activeStep === 4 && (
-                    <span className="text-success font-mono">19:19:02 [PRICING] Final Price = ₸1,190. Cash back points calculated: +59. SUCCESS.</span>
-                  )}
-                </div>
-              </div>
-
+                ))
+              )}
             </div>
           </div>
 

@@ -5,9 +5,16 @@ const API_REQUEST_TIMEOUT_MS = 20000;
 const DEMO_ACCESS_TOKEN = 'demo-access-token';
 const DEMO_REFRESH_TOKEN = 'demo-refresh-token';
 
+function getProductionApiBaseUrl() {
+  if (typeof window !== 'undefined' && window.location.hostname.endsWith('.onrender.com')) {
+    return '/api';
+  }
+  return DEFAULT_PRODUCTION_API_BASE_URL;
+}
+
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.PROD ? DEFAULT_PRODUCTION_API_BASE_URL : '/api');
+  (import.meta.env.PROD ? getProductionApiBaseUrl() : '/api');
 
 export type ApiError = { detail?: string } & Record<string, unknown>;
 

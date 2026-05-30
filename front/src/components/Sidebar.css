@@ -314,6 +314,9 @@
     gap: 2px;
     justify-content: space-around;
     align-items: stretch;
+    touch-action: pan-y;
+    overscroll-behavior: none;
+    overscroll-behavior-x: none;
   }
 
   .bottom-nav-item {

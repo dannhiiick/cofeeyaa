@@ -7,13 +7,19 @@
   grid-template-columns: 280px 1fr;
   grid-template-rows: auto 1fr auto;
   height: 100dvh;
-  width: 100vw;
+  width: 100%;          /* NOT 100vw — avoids scrollbar-triggered overflow */
+  max-width: 100%;
   gap: 0;
   margin: 0;
   border: none;
   border-radius: 0;
   overflow: hidden;
+  overflow-x: clip;
   background: var(--surface);
+  /* Prevent horizontal swipe gestures (back/forward navigation) */
+  touch-action: pan-y;
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
 }
 
 .main-content {
@@ -29,10 +35,12 @@
 .content-area {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: clip;
   padding: 32px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
 }
 
 .content-area::-webkit-scrollbar {
@@ -84,22 +92,39 @@
 @media (max-width: 768px) {
   html, body {
     overflow: hidden;
+    overflow-x: clip;
+    overscroll-behavior: none;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
   }
 
   .app-container {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
     height: 100dvh;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-x: clip;
+    touch-action: pan-y;
+    overscroll-behavior: none;
+    overscroll-behavior-x: none;
   }
 
   .main-content {
     grid-column: 1;
     grid-row: 1;
     padding-bottom: 70px; /* room for bottom nav */
+    overflow: hidden;
+    overflow-x: clip;
+    touch-action: pan-y;
   }
 
   .content-area {
     padding: 16px;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
   }
 
   .header {

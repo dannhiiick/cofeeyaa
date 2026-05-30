@@ -197,3 +197,46 @@ th,
 td {
   border-color: transparent !important;
 }
+
+/* ================================================
+   TOUCH & MOBILE GLOBAL IMPROVEMENTS
+   ================================================ */
+
+/* Minimum tap target size (Apple HIG: 44x44px) */
+button,
+.glass-btn,
+.nav-item,
+.header-btn,
+.bottom-nav-item {
+  min-height: 44px;
+}
+
+/* Prevent text selection on interactive elements */
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Smooth momentum scrolling on iOS */
+.content-area,
+.crm-clients-scroll,
+.checkout-items-list,
+.ingredients-bars-scroll,
+.notifications-list,
+.top-products-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent horizontal overflow globally */
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Better focus outlines for accessibility */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

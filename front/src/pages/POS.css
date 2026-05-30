@@ -21,6 +21,49 @@
   }
 }
 
+@media (max-width: 768px) {
+  .pos-container {
+    padding: 4px 0;
+  }
+
+  .pos-split {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 16px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .menu-image-badge {
+    height: 80px;
+    font-size: 22px;
+  }
+
+  .menu-meta {
+    padding: 10px;
+    gap: 4px;
+  }
+
+  .menu-name {
+    font-size: 13px;
+  }
+
+  .checkout-desk-panel {
+    height: auto;
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .checkout-footer {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+
 .menu-grid-panel {
   display: flex;
   flex-direction: column;

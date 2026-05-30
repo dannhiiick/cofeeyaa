@@ -2,10 +2,12 @@
   padding: 24px;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
+
 
 .analytics-controls-bar {
   display: flex;
@@ -372,4 +374,88 @@
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
+}
+
+/* ================================================
+   RESPONSIVE — Analytics
+   ================================================ */
+@media (max-width: 1024px) {
+  .analytics-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .segmented-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .custom-date-form {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .date-inputs {
+    flex-wrap: wrap;
+  }
+
+  .select-period-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .analytics-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-container {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .dashboard-grid-4 {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+
+  .analytics-split-left {
+    padding: 16px;
+  }
+
+  .split-card {
+    padding: 16px;
+  }
+
+  .pure-css-chart-container {
+    height: 200px;
+  }
+
+  .chart-bar-label {
+    font-size: 9px;
+  }
+
+  .analytics-table th,
+  .analytics-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .control-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .dashboard-grid-4 {
+    grid-template-columns: 1fr;
+  }
 }

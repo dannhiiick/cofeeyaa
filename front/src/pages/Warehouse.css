@@ -16,6 +16,48 @@
   }
 }
 
+@media (max-width: 768px) {
+  .warehouse-container {
+    padding: 4px 0;
+  }
+
+  .warehouse-split {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .inventory-levels-panel,
+  .adjustments-panel {
+    padding: 16px;
+    min-height: 0;
+  }
+
+  .ingredients-bars-scroll {
+    max-height: 280px;
+  }
+
+  .radio-selection-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .warehouse-audit-panel {
+    padding: 16px;
+  }
+
+  .audit-table th,
+  .audit-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  /* Hide reason column on mobile */
+  .audit-table th:nth-child(4),
+  .audit-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+
 .inventory-levels-panel,
 .adjustments-panel {
   padding: 24px;

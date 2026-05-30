@@ -1,3 +1,7 @@
+/* =========================================
+   APP LAYOUT — Desktop: sidebar + content
+   Tablet/Mobile: bottom nav bar
+   ========================================= */
 .app-container {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -19,11 +23,13 @@
   flex-direction: column;
   background: var(--surface);
   min-width: 0;
+  overflow: hidden;
 }
 
 .content-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 32px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -32,16 +38,13 @@
 .content-area::-webkit-scrollbar {
   width: 8px;
 }
-
 .content-area::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .content-area::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;
 }
-
 .content-area::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
 }
@@ -60,31 +63,51 @@
   font-weight: 700;
 }
 
+/* ──────────────────────────────────────────
+   TABLET  (769px – 1024px)
+   Sidebar shrinks to icon-only strip
+   ────────────────────────────────────────── */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .app-container {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .content-area {
+    padding: 20px;
+  }
+}
+
+/* ──────────────────────────────────────────
+   MOBILE  (≤ 768px)
+   Sidebar hidden, bottom nav bar shown
+   ────────────────────────────────────────── */
 @media (max-width: 768px) {
+  html, body {
+    overflow: hidden;
+  }
+
   .app-container {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr auto;
-    margin: 0;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
+    grid-template-rows: 1fr auto;
+    height: 100dvh;
   }
 
   .main-content {
     grid-column: 1;
-    grid-row: 2 / 4;
+    grid-row: 1;
+    padding-bottom: 70px; /* room for bottom nav */
   }
 
-  .sidebar {
-    grid-column: 1;
-    grid-row: 1;
+  .content-area {
+    padding: 16px;
   }
 
   .header {
     display: none;
   }
 
-  .content-area {
-    padding: 16px;
+  /* Desktop sidebar hidden on mobile — bottom nav replaces it */
+  .sidebar {
+    display: none;
   }
 }

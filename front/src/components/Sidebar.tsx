@@ -36,73 +36,99 @@ export function Sidebar() {
     ? t('sidebar.elena') 
     : (user?.displayName || user?.username || '');
 
+  // Show only first 5 items in bottom nav to avoid overflow
+  const bottomNavItems = navItems.slice(0, 5);
+
   return (
-    <aside className="sidebar glass-panel">
-      <div className="sidebar-header">
-        <div className="logo" onClick={() => navigate('/')}>
-          <span className="logo-icon"><Coffee size={28} className="logo-svg" /></span>
-          <div className="logo-meta">
-            <span className="logo-text">{t('sidebar.title')}</span>
-            <span className="logo-subtext">{t('sidebar.subtitle')}</span>
+    <>
+      {/* ── Desktop / Tablet Sidebar ── */}
+      <aside className="sidebar glass-panel">
+        <div className="sidebar-header">
+          <div className="logo" onClick={() => navigate('/')}>
+            <span className="logo-icon"><Coffee size={28} className="logo-svg" /></span>
+            <div className="logo-meta">
+              <span className="logo-text">{t('sidebar.title')}</span>
+              <span className="logo-subtext">{t('sidebar.subtitle')}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {user && (
-        <div className="active-role-panel">
-          <div className="role-header">
-            <UserCheck size={14} className="role-icon" />
-            <span>{t('sidebar.activeRole')}</span>
+        {user && (
+          <div className="active-role-panel">
+            <div className="role-header">
+              <UserCheck size={14} className="role-icon" />
+              <span>{t('sidebar.activeRole')}</span>
+            </div>
+            <div className="role-selector-container">
+              <select
+                value={user.role}
+                onChange={(e) => handleRoleChange(e.target.value as any)}
+                className="role-select-box"
+              >
+                <option value="manager">{t('sidebar.roleManager')}</option>
+                <option value="admin">{t('sidebar.roleAdmin')}</option>
+                <option value="director">{t('sidebar.roleDirector')}</option>
+              </select>
+            </div>
           </div>
-          <div className="role-selector-container">
-            <select
-              value={user.role}
-              onChange={(e) => handleRoleChange(e.target.value as any)}
-              className="role-select-box"
-            >
-              <option value="manager">{t('sidebar.roleManager')}</option>
-              <option value="admin">{t('sidebar.roleAdmin')}</option>
-              <option value="director">{t('sidebar.roleDirector')}</option>
-            </select>
-          </div>
+        )}
+
+        <nav className="sidebar-nav">
+          {navItems.map(({ icon: Icon, labelKey, path, roles }) => {
+            const isAllowed = user && roles.includes(user.role);
+            return (
+              <NavLink
+                key={path}
+                to={path}
+                end={path === '/'}
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''} ${!isAllowed ? 'role-restricted' : ''}`}
+              >
+                <Icon size={20} className="nav-icon" />
+                <span className="nav-label">{t(labelKey)}</span>
+                {!isAllowed && (
+                  <span className="restricted-badge">
+                    {roles[0].substring(0, 3).toUpperCase()}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        <div className="sidebar-footer">
+          {user && (
+            <div className="user-details-card">
+              <div className="user-meta">
+                <span className="user-name">{displayName}</span>
+                <span className="user-role-badge">{user.role.toUpperCase()}</span>
+              </div>
+              <button className="logout-btn" onClick={logout} title={t('header.logout')}>
+                <LogOut size={18} />
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </aside>
 
-      <nav className="sidebar-nav">
-        {navItems.map(({ icon: Icon, labelKey, path, roles }) => {
+      {/* ── Mobile Bottom Navigation Bar ── */}
+      <nav className="bottom-nav">
+        {bottomNavItems.map(({ icon: Icon, labelKey, path, roles }) => {
           const isAllowed = user && roles.includes(user.role);
           return (
             <NavLink
               key={path}
               to={path}
               end={path === '/'}
-              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''} ${!isAllowed ? 'role-restricted' : ''}`}
+              className={({ isActive }) =>
+                `bottom-nav-item ${isActive ? 'active' : ''} ${!isAllowed ? 'role-restricted' : ''}`
+              }
             >
-              <Icon size={20} className="nav-icon" />
-              <span className="nav-label">{t(labelKey)}</span>
-              {!isAllowed && (
-                <span className="restricted-badge">
-                  {roles[0].substring(0, 3).toUpperCase()}
-                </span>
-              )}
+              <Icon size={22} className="bottom-nav-icon" />
+              <span className="bottom-nav-label">{t(labelKey)}</span>
             </NavLink>
           );
         })}
       </nav>
-
-      <div className="sidebar-footer">
-        {user && (
-          <div className="user-details-card">
-            <div className="user-meta">
-              <span className="user-name">{displayName}</span>
-              <span className="user-role-badge">{user.role.toUpperCase()}</span>
-            </div>
-            <button className="logout-btn" onClick={logout} title={t('header.logout')}>
-              <LogOut size={18} />
-            </button>
-          </div>
-        )}
-      </div>
-    </aside>
+    </>
   );
 }

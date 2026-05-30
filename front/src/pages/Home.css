@@ -5,7 +5,9 @@
   padding: 8px 0;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
+
 
 /* Loading state */
 .dashboard-loading {
@@ -88,7 +90,9 @@
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
+
 
 .clock-widget {
   background: rgba(20, 14, 12, 0.8);
@@ -686,3 +690,97 @@
 .italic { font-style: italic; }
 .font-mono { font-family: var(--mono); }
 .mt-15 { margin-top: 15px; }
+
+/* ================================================
+   RESPONSIVE BREAKPOINTS — Home / Dashboard
+   ================================================ */
+
+/* Tablet (769px – 1024px) */
+@media (max-width: 1024px) {
+  .welcome-banner {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .banner-right {
+    display: none;
+  }
+
+  .dashboard-split-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-dashboard-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  .dashboard-container {
+    gap: 16px;
+  }
+
+  .welcome-banner {
+    padding: 16px;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .banner-left h2 {
+    font-size: 20px;
+  }
+
+  .banner-right {
+    display: none;
+  }
+
+  .banner-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .banner-buttons .glass-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .analytics-dashboard-summary-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .food-drinks-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-section-card {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .grid-table-header,
+  .grid-table-row {
+    grid-template-columns: 3fr 2fr 0fr 2fr;
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+
+  /* Hide threshold column on very small screens */
+  .grid-table-header > *:nth-child(3),
+  .grid-table-row > *:nth-child(3) {
+    display: none;
+  }
+
+  .stat-pill-value {
+    font-size: 20px;
+  }
+}
+
+/* Extra small phones (≤ 400px) */
+@media (max-width: 400px) {
+  .analytics-dashboard-summary-cards {
+    grid-template-columns: 1fr;
+  }
+}

@@ -16,6 +16,34 @@
   }
 }
 
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 4px 0;
+  }
+
+  .settings-split {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .settings-form-panel,
+  .demo-accounts-panel {
+    padding: 18px;
+    gap: 18px;
+  }
+
+  .demo-account-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .copy-btn {
+    align-self: flex-end;
+  }
+}
+
+
 .settings-form-panel,
 .demo-accounts-panel {
   padding: 28px;

@@ -19,6 +19,56 @@
   }
 }
 
+@media (max-width: 768px) {
+  .crm-container {
+    padding: 4px 0;
+    overflow-y: auto;
+  }
+
+  .crm-split {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 16px;
+  }
+
+  .crm-list-panel {
+    height: auto;
+    max-height: 50vh;
+    padding: 16px;
+  }
+
+  .crm-detail-panel {
+    height: auto;
+    padding: 16px;
+  }
+
+  .client-profile-header {
+    gap: 12px;
+  }
+
+  .profile-titles h2 {
+    font-size: 18px;
+  }
+
+  .crm-logs-split {
+    grid-template-columns: 1fr;
+  }
+
+  .logger-inputs {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .comm-select {
+    width: 100%;
+  }
+
+  .modal-card {
+    padding: 16px;
+  }
+}
+
+
 .crm-list-panel {
   display: flex;
   flex-direction: column;

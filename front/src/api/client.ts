@@ -1,6 +1,10 @@
 import type { CurrentUser, Client, CommunicationHistory, NotificationLog, InventoryItem, StockOperation, CoffeeProduct, Order, AnalyticsResponse } from '../types';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const DEFAULT_PRODUCTION_API_BASE_URL = 'https://cofeeyaa-backend.onrender.com/api';
+
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? DEFAULT_PRODUCTION_API_BASE_URL : '/api');
 
 export type ApiError = { detail?: string } & Record<string, unknown>;
 

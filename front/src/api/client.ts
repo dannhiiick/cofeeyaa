@@ -1,7 +1,21 @@
 import type { CurrentUser, Client, CommunicationHistory, NotificationLog, InventoryItem, StockOperation, CoffeeProduct, Order, AnalyticsResponse } from '../types';
 
 const DEFAULT_PRODUCTION_API_BASE_URL = 'https://cofeeyaa-backend.onrender.com/api';
-const API_REQUEST_TIMEOUT_MS = 20000;
+// Render free tier can take up to 60s to wake up from sleep
+const API_REQUEST_TIMEOUT_MS = 65000;
+const COLD_START_RETRY_ATTEMPTS = 4;
+const COLD_START_RETRY_DELAY_MS = 5000;
+
+// Subscribers notified when cold-start retry is in progress
+type WakeupListener = (attempt: number, total: number) => void;
+const wakeupListeners = new Set<WakeupListener>();
+export function onServerWakeup(fn: WakeupListener) {
+  wakeupListeners.add(fn);
+  return () => wakeupListeners.delete(fn);
+}
+function notifyWakeup(attempt: number, total: number) {
+  wakeupListeners.forEach(fn => fn(attempt, total));
+}
 const DEMO_ACCESS_TOKEN = 'demo-access-token';
 const DEMO_REFRESH_TOKEN = 'demo-refresh-token';
 
@@ -128,13 +142,30 @@ async function refreshAccessToken(): Promise<string> {
   return data.access;
 }
 
+async function doFetch(
+  url: string,
+  options: RequestInit,
+  headers: Record<string, string>
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, headers, signal: controller.signal });
+  } catch (err) {
+    if ((err as Error).name === 'AbortError') {
+      throw new Error('Сервер не отвечает. Проверьте подключение к интернету.');
+    }
+    throw err;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
   const token = getStoredAccessToken();
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -147,20 +178,17 @@ export async function apiRequest<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  let res: Response;
-  try {
-    res = await fetch(`${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-  } catch (err) {
-    if ((err as Error).name === 'AbortError') {
-      throw new Error('Сервер не отвечает. Проверьте, что backend запущен.');
+  const url = `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+
+  // Cold-start retry loop: Render free tier returns 502 while waking up
+  let res: Response = await doFetch(url, options, headers);
+  if (res.status === 502 || res.status === 503) {
+    for (let attempt = 1; attempt <= COLD_START_RETRY_ATTEMPTS; attempt++) {
+      notifyWakeup(attempt, COLD_START_RETRY_ATTEMPTS);
+      await new Promise(r => window.setTimeout(r, COLD_START_RETRY_DELAY_MS));
+      res = await doFetch(url, options, headers);
+      if (res.status !== 502 && res.status !== 503) break;
     }
-    throw err;
-  } finally {
-    window.clearTimeout(timeout);
   }
 
   if (!res.ok) {
@@ -168,21 +196,11 @@ export async function apiRequest<T>(
       try {
         const newAccess = await refreshAccessToken();
         headers['Authorization'] = `Bearer ${newAccess}`;
-        const retryRes = await fetch(
-          `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`,
-          {
-            ...options,
-            headers,
-          }
-        );
+        const retryRes = await doFetch(url, options, headers);
 
         if (!retryRes.ok) {
           let payload: ApiError | undefined;
-          try {
-            payload = await retryRes.json();
-          } catch {
-            payload = undefined;
-          }
+          try { payload = await retryRes.json(); } catch { payload = undefined; }
           const detail = payload?.detail || `Request failed with status ${retryRes.status}`;
           throw new Error(detail);
         }
@@ -195,11 +213,7 @@ export async function apiRequest<T>(
     }
 
     let payload: ApiError | undefined;
-    try {
-      payload = await res.json();
-    } catch {
-      payload = undefined;
-    }
+    try { payload = await res.json(); } catch { payload = undefined; }
     const detail = payload?.detail || `Request failed with status ${res.status}`;
     throw new Error(detail);
   }

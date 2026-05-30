@@ -1,6 +1,7 @@
 import type { CurrentUser, Client, CommunicationHistory, NotificationLog, InventoryItem, StockOperation, CoffeeProduct, Order, AnalyticsResponse } from '../types';
 
 const DEFAULT_PRODUCTION_API_BASE_URL = 'https://cofeeyaa-backend.onrender.com/api';
+const API_REQUEST_TIMEOUT_MS = 20000;
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -56,6 +57,8 @@ export async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = getStoredAccessToken();
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -68,10 +71,21 @@ export async function apiRequest<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`, {
-    ...options,
-    headers,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if ((err as Error).name === 'AbortError') {
+      throw new Error('Сервер не отвечает. Проверьте, что backend запущен.');
+    }
+    throw err;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 
   if (!res.ok) {
     if (res.status === 401) {

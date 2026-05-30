@@ -174,7 +174,9 @@ export async function apiRequest<T>(
       : {}),
   };
 
-  if (token) {
+  // Don't send demo tokens to the real backend — they are invalid JWTs
+  // and will cause 401 even with AllowAny permissions set on Django side.
+  if (token && token !== DEMO_ACCESS_TOKEN) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 

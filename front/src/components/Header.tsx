@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Bell, Settings, User, LogOut, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Bell, Settings, User, LogOut, CheckCircle, AlertTriangle, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 import { fetchInventory } from '../api/client';
 import type { InventoryItem } from '../types';
 import './Header.css';
@@ -10,6 +11,7 @@ import './Header.css';
 export function Header() {
   const { user, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [criticalItems, setCriticalItems] = useState<InventoryItem[]>([]);
@@ -156,6 +158,16 @@ export function Header() {
       </div>
 
       <div className="header-right">
+        {/* Theme Toggle */}
+        <button
+          className="header-btn theme-toggle-btn"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          type="button"
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {/* Language Selection Buttons */}
         <div className="language-selector glass-panel">
           <button 

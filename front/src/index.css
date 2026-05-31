@@ -38,6 +38,83 @@
   --radius-lg: 14px;
 }
 
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg: #f5f0eb;
+  --bg-gradient: none;
+
+  --surface: #ffffff;
+  --surface-2: #f0ebe5;
+  --surface-3: #e8e0d8;
+
+  --border: rgba(140, 90, 50, 0.12);
+  --border-soft: rgba(140, 90, 50, 0.07);
+  --border-active: rgba(140, 90, 50, 0.32);
+
+  --text-primary: #1a1410;
+  --text-secondary: #6b5c4e;
+  --text-muted: #a89080;
+
+  --primary: #a0622e;
+  --primary-hover: #b8743c;
+  --primary-dim: rgba(160, 98, 46, 0.10);
+
+  --secondary: #b06b10;
+  --accent: #2e7d5a;
+  --danger: #b83228;
+  --info: #1f5a8a;
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.16);
+}
+
+/* Light theme specific overrides */
+[data-theme="light"] .glass-btn-primary {
+  color: #ffffff;
+}
+
+[data-theme="light"] .avatar-placeholder {
+  color: #ffffff;
+}
+
+[data-theme="light"] .logo-icon {
+  color: #ffffff;
+}
+
+[data-theme="light"] .control-btn.active {
+  color: #ffffff;
+}
+
+[data-theme="light"] .lang-btn.active {
+  color: #ffffff;
+}
+
+[data-theme="light"] .node-number {
+  color: var(--primary);
+}
+
+[data-theme="light"] .flowchart-logs-console {
+  background: #f8f3ee;
+}
+
+[data-theme="light"] .role-select-box option {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] * {
+  scrollbar-color: rgba(160, 98, 46, 0.2) transparent;
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb {
+  background: rgba(160, 98, 46, 0.18);
+}
+
+[data-theme="light"] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 98, 46, 0.32);
+}
+
 html, body {
   margin: 0;
   padding: 0;

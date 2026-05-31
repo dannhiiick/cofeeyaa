@@ -2,6 +2,8 @@
   padding: 8px 0;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
 }
 
 .warehouse-split {
@@ -19,17 +21,20 @@
 @media (max-width: 768px) {
   .warehouse-container {
     padding: 4px 0;
+    overflow-x: hidden;
   }
 
   .warehouse-split {
     grid-template-columns: 1fr;
     gap: 16px;
+    overflow-x: hidden;
   }
 
   .inventory-levels-panel,
   .adjustments-panel {
     padding: 16px;
     min-height: 0;
+    overflow-x: hidden;
   }
 
   .ingredients-bars-scroll {
@@ -42,6 +47,13 @@
 
   .warehouse-audit-panel {
     padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .audit-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
   }
 
   .audit-table th,

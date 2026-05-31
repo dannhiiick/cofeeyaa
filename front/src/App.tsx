@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -40,19 +41,21 @@ function AppLayout() {
 
 function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <LanguageProvider>
-        <AuthProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/*" element={<AppLayout />} />
-            </Route>
-          </Routes>
-        </AuthProvider>
-      </LanguageProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <LanguageProvider>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/*" element={<AppLayout />} />
+              </Route>
+            </Routes>
+          </AuthProvider>
+        </LanguageProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

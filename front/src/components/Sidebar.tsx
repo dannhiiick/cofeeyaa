@@ -1,12 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Coffee, ShoppingBag, Users, Boxes, BarChart3, Settings, LogOut, Calculator, UserCheck } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Coffee, ShoppingBag, Users, Boxes, BarChart3, Settings, LogOut, Calculator, UserCheck, Sun, Moon } from 'lucide-react';
 import './Sidebar.css';
 
 export function Sidebar() {
   const { user, logout, updateProfile } = useAuth();
   const { t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleRoleChange = async (newRole: 'admin' | 'manager' | 'director') => {
@@ -128,6 +130,16 @@ export function Sidebar() {
             </NavLink>
           );
         })}
+        {/* Theme toggle for mobile */}
+        <button
+          className="bottom-nav-item bottom-nav-theme-btn"
+          onClick={toggleTheme}
+          type="button"
+          title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+        >
+          {theme === 'dark' ? <Sun size={22} className="bottom-nav-icon" /> : <Moon size={22} className="bottom-nav-icon" />}
+          <span className="bottom-nav-label">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+        </button>
       </nav>
     </>
   );

@@ -329,4 +329,17 @@
   }
 
   .bottom-nav-icon { flex-shrink: 0; }
+
+  /* Mobile theme toggle button */
+  .bottom-nav-theme-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .bottom-nav-theme-btn:hover {
+    color: var(--primary);
+    background: var(--primary-dim);
+  }
 }

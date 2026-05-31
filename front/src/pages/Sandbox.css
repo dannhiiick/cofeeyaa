@@ -5,6 +5,8 @@
   padding: 8px 0;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
 }
 
 .sandbox-desc-banner {
@@ -61,6 +63,14 @@
   .sandbox-grid {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 768px) {
+  .sandbox-container { padding: 0; gap: 14px; overflow-x: hidden; }
+  .sandbox-desc-banner { padding: 16px; gap: 12px; }
+  .sandbox-tabs { flex-wrap: wrap; gap: 8px; }
+  .sandbox-card { padding: 16px; gap: 12px; }
+  .console-body { max-height: 280px; }
 }
 
 .sandbox-card {

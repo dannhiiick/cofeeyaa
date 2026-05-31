@@ -2,6 +2,8 @@
   padding: 4px 0;
   height: 100%;
   overflow: hidden;
+  overflow-x: hidden;
+  touch-action: pan-y;
 }
 
 .crm-split {
@@ -16,10 +18,10 @@
 }
 
 @media (max-width: 768px) {
-  .crm-container { padding: 0; overflow-y: auto; }
-  .crm-split { grid-template-columns: 1fr; height: auto; gap: 14px; }
-  .crm-list-panel { height: auto; max-height: 50vh; padding: 14px; }
-  .crm-detail-panel { height: auto; padding: 14px; }
+  .crm-container { padding: 0; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; }
+  .crm-split { grid-template-columns: 1fr; height: auto; gap: 14px; overflow-x: hidden; }
+  .crm-list-panel { height: auto; max-height: 50vh; padding: 14px; overflow-x: hidden; }
+  .crm-detail-panel { height: auto; padding: 14px; overflow-x: hidden; }
   .client-profile-header { gap: 10px; }
   .profile-titles h2 { font-size: 17px; }
   .crm-logs-split { grid-template-columns: 1fr; }

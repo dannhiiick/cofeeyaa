@@ -3,6 +3,7 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  touch-action: pan-y;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -317,13 +318,14 @@
 }
 
 @media (max-width: 768px) {
-  .analytics-container { padding: 0; gap: 14px; }
+  .analytics-container { padding: 0; gap: 14px; overflow-x: hidden; }
   .dashboard-grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
   .stat-value { font-size: 20px; }
   .analytics-split-left { padding: 14px; }
   .split-card { padding: 14px; }
   .pure-css-chart-container { height: 180px; }
   .chart-bar-label { font-size: 9px; }
+  .analytics-table { width: 100%; }
   .analytics-table th,
   .analytics-table td { padding: 7px 8px; font-size: 11px; }
   .control-btn { padding: 5px 8px; font-size: 12px; }
